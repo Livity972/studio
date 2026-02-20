@@ -52,53 +52,57 @@ export function AuthForm({ onAuthSuccess }: AuthFormProps) {
     }
   };
 
-  const handleLogin = async (values: z.infer<typeof formSchema>) => {
+  const handleLogin = (values: z.infer<typeof formSchema>) => {
     setIsLoading(true);
-    try {
-      await signInWithEmailAndPassword(auth, values.email, values.password);
-      toast({ title: 'Connexion réussie !', description: 'Heureux de vous revoir.' });
-      onAuthSuccess?.();
-    } catch (error: any) {
-      console.error('Login error:', error.code, error.message);
-      toast({
-        variant: 'destructive',
-        title: 'Erreur de connexion',
-        description: getFirebaseErrorMessage(error.code),
+    signInWithEmailAndPassword(auth, values.email, values.password)
+      .then(() => {
+        toast({ title: 'Connexion réussie !', description: 'Heureux de vous revoir.' });
+        onAuthSuccess?.();
+      })
+      .catch((error: any) => {
+        console.error('Login error:', error.code, error.message);
+        toast({
+          variant: 'destructive',
+          title: 'Erreur de connexion',
+          description: getFirebaseErrorMessage(error.code),
+        });
+      })
+      .finally(() => {
+        setIsLoading(false);
       });
-    } finally {
-      setIsLoading(false);
-    }
   };
 
-  const handleRegister = async (values: z.infer<typeof formSchema>) => {
+  const handleRegister = (values: z.infer<typeof formSchema>) => {
     setIsLoading(true);
-    try {
-      const userCredential = await createUserWithEmailAndPassword(auth, values.email, values.password);
-      const user = userCredential.user;
+    createUserWithEmailAndPassword(auth, values.email, values.password)
+      .then((userCredential) => {
+        const user = userCredential.user;
 
-      const userDocRef = doc(firestore, 'users', user.uid);
-      setDocumentNonBlocking(
-        userDocRef,
-        {
-          id: user.uid,
-          email: user.email,
-          createdAt: serverTimestamp(),
-        },
-        { merge: false }
-      );
+        const userDocRef = doc(firestore, 'users', user.uid);
+        setDocumentNonBlocking(
+          userDocRef,
+          {
+            id: user.uid,
+            email: user.email,
+            createdAt: serverTimestamp(),
+          },
+          { merge: false }
+        );
 
-      toast({ title: 'Inscription réussie !', description: 'Bienvenue ! Votre compte a été créé.' });
-      onAuthSuccess?.();
-    } catch (error: any) {
-      console.error('Register error:', error.code, error.message);
-      toast({
-        variant: 'destructive',
-        title: 'Erreur d\'inscription',
-        description: getFirebaseErrorMessage(error.code),
+        toast({ title: 'Inscription réussie !', description: 'Bienvenue ! Votre compte a été créé.' });
+        onAuthSuccess?.();
+      })
+      .catch((error: any) => {
+        console.error('Register error:', error.code, error.message);
+        toast({
+          variant: 'destructive',
+          title: 'Erreur d\'inscription',
+          description: getFirebaseErrorMessage(error.code),
+        });
+      })
+      .finally(() => {
+        setIsLoading(false);
       });
-    } finally {
-      setIsLoading(false);
-    }
   };
 
   const onSubmit = activeTab === 'login' ? handleLogin : handleRegister;
