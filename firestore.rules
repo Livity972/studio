@@ -1,0 +1,121 @@
+/**
+ * Core Philosophy: This ruleset enforces a strict user-ownership model. All data is
+ * considered private and is nested within a user-specific document tree. Access is
+ * granted if and only if the authenticated user's UID matches the {userId} specified
+ * in the document path.
+ *
+ * Data Structure: All application data is organized hierarchically under the top-level
+ * 'users' collection. The structure is /users/{userId}/{subcollection}/{documentId},
+ * where each subcollection (e.g., studyMaterials, flashcardSets) contains documents
+ * exclusively owned by the user identified by {userId}.
+ *
+ * Key Security Decisions:
+ * - No Public Data: There are no publicly readable collections. All 'list' and 'get'
+ *   operations require user authentication and ownership.
+ * - No User Listing: It is not possible to list documents in the top-level '/users'
+ *   collection, preventing enumeration of all application users.
+ * - Path-Based Authorization: Rules rely on the {userId} in the path for authorization,
+ *   which is fast, secure, and avoids costly 'get()' calls to other documents.
+ * - Authorization-Critical Fields: On document creation, fields that link documents
+ *   together or establish ownership (e.g., 'userId', 'flashcardSetId') are validated
+ *   to ensure they match the document's path, maintaining relational integrity.
+ *   These fields are immutable once set.
+ */
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Helper functions to promote readable, secure, and maintainable rules.
+
+    /**
+     * Checks if the user is authenticated.
+     */
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    /**
+     * Checks if the authenticated user's UID matches the provided userId.
+     * This is the primary function for enforcing document ownership.
+     */
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+    
+    /**
+     * Ensures an update or delete operation targets an existing document
+     * and is performed by the document's owner.
+     */
+    function isExistingOwner(userId) {
+      return isOwner(userId) && resource != null;
+    }
+
+    /**
+     * @description Rules for a user's own profile document.
+     * @path /users/{userId}
+     * @allow (create) A new user with UID 'user_abc' creating their own profile at '/users/user_abc'.
+     * @deny (get) User 'user_xyz' trying to read the profile of 'user_abc'.
+     * @principle A user can create their own root document and has full control over it, but no one else can access it.
+     */
+    match /users/{userId} {
+      allow get: if isOwner(userId);
+      allow list: if false; // Disallow listing all users.
+      allow create: if isOwner(userId)
+                    && request.resource.data.id == userId;
+      allow update: if isExistingOwner(userId)
+                    && request.resource.data.id == resource.data.id;
+      allow delete: if isExistingOwner(userId);
+      
+      /**
+       * @description Rules for a user's collection of study materials.
+       * @path /users/{userId}/studyMaterials/{studyMaterialId}
+       * @allow (list) User 'user_abc' listing their own study materials.
+       * @deny (create) User 'user_xyz' trying to create a study material under '/users/user_abc/...'.
+       * @principle Restricts all access to a user's own private data tree.
+       */
+      match /studyMaterials/{studyMaterialId} {
+        allow get: if isOwner(userId);
+        allow list: if isOwner(userId);
+        allow create: if isOwner(userId)
+                      && request.resource.data.userId == userId;
+        allow update: if isExistingOwner(userId)
+                      && request.resource.data.userId == resource.data.userId;
+        allow delete: if isExistingOwner(userId);
+      }
+      
+      /**
+       * @description Rules for a user's collection of flashcard sets.
+       * @path /users/{userId}/flashcardSets/{flashcardSetId}
+       * @allow (update) User 'user_abc' updating one of their own flashcard sets.
+       * @deny (get) An unauthenticated user trying to read any flashcard set.
+       * @principle Restricts all access to a user's own private data tree.
+       */
+      match /flashcardSets/{flashcardSetId} {
+        allow get: if isOwner(userId);
+        allow list: if isOwner(userId);
+        allow create: if isOwner(userId)
+                      && request.resource.data.userId == userId;
+        allow update: if isExistingOwner(userId)
+                      && request.resource.data.userId == resource.data.userId;
+        allow delete: if isExistingOwner(userId);
+        
+        /**
+         * @description Rules for the individual flashcards within a set.
+         * @path /users/{userId}/flashcardSets/{flashcardSetId}/flashcards/{flashcardId}
+         * @allow (delete) User 'user_abc' deleting a flashcard from a set they own.
+         * @deny (list) User 'user_xyz' trying to list flashcards in a set belonging to 'user_abc'.
+         * @principle Ownership is inherited from the document path, ensuring flashcards are as private as their parent set.
+         */
+        match /flashcards/{flashcardId} {
+          allow get: if isOwner(userId);
+          allow list: if isOwner(userId);
+          allow create: if isOwner(userId)
+                        && request.resource.data.flashcardSetId == flashcardSetId;
+          allow update: if isExistingOwner(userId)
+                        && request.resource.data.flashcardSetId == resource.data.flashcardSetId;
+          allow delete: if isExistingOwner(userId);
+        }
+      }
+    }
+  }
+}
