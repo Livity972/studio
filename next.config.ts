@@ -25,9 +25,8 @@ const nextConfig: NextConfig = {
     ],
   },
   typescript: {
-    // This speeds up production builds by skipping type checking.
-    // It's recommended to have a separate step for type checking in your workflow.
-    ignoreBuildErrors: true,
+    // We want to catch errors during the build process to ensure code quality.
+    ignoreBuildErrors: false,
   },
 };
 
