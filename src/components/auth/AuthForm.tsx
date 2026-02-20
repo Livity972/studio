@@ -60,7 +60,6 @@ export function AuthForm({ onAuthSuccess }: AuthFormProps) {
         onAuthSuccess?.();
       })
       .catch((error: any) => {
-        console.error('Login error:', error.code, error.message);
         toast({
           variant: 'destructive',
           title: 'Erreur de connexion',
@@ -93,7 +92,6 @@ export function AuthForm({ onAuthSuccess }: AuthFormProps) {
         onAuthSuccess?.();
       })
       .catch((error: any) => {
-        console.error('Register error:', error.code, error.message);
         toast({
           variant: 'destructive',
           title: 'Erreur d\'inscription',
