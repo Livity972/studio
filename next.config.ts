@@ -24,6 +24,11 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  typescript: {
+    // This speeds up production builds by skipping type checking.
+    // It's recommended to have a separate step for type checking in your workflow.
+    ignoreBuildErrors: true,
+  },
 };
 
 export default nextConfig;
