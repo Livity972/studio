@@ -46,7 +46,7 @@ export default function FlashcardItem({ card, onUpdate, onDelete }: FlashcardIte
               />
             </div>
             <div>
-              <Label htmlFor={`answer-${card.id}`} className="font-semibold text-sm">Answer</Label>
+              <Label htmlFor={`answer-${card.id}`} className="font-semibold text-sm">Réponse</Label>
               <Textarea
                 id={`answer-${card.id}`}
                 value={editedAnswer}

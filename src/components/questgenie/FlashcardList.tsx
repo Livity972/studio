@@ -21,15 +21,15 @@ export default function FlashcardList({
     <div className="space-y-4">
       <Button onClick={onAddFlashcard} className="w-full">
         <Plus className="mr-2 h-4 w-4" />
-        Add New Card
+        Ajouter une nouvelle carte
       </Button>
       {flashcards.length === 0 ? (
         <Card className="mt-4 flex flex-col items-center justify-center text-center p-8">
           <CardContent>
             <BookOpen className="h-12 w-12 text-muted-foreground mx-auto" />
-            <p className="mt-4 text-lg font-semibold">Your deck is empty.</p>
+            <p className="mt-4 text-lg font-semibold">Votre paquet est vide.</p>
             <p className="mt-1 text-muted-foreground">
-              Generate flashcards from your notes or add one manually to get started.
+              Générez des fiches à partir de vos notes ou ajoutez-en une manuellement pour commencer.
             </p>
           </CardContent>
         </Card>

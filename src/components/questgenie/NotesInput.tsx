@@ -28,7 +28,7 @@ export default function NotesInput({ isLoading, setIsLoading, onFlashcardsGenera
     if (error) {
       toast({
         variant: 'destructive',
-        title: 'Error',
+        title: 'Erreur',
         description: error,
       });
     } else if (data) {
@@ -44,14 +44,14 @@ export default function NotesInput({ isLoading, setIsLoading, onFlashcardsGenera
       <CardHeader>
         <div className="flex items-center gap-2">
           <FileText className="h-6 w-6 text-primary" />
-          <CardTitle className="font-headline">Generate Flashcards</CardTitle>
+          <CardTitle className="font-headline">Générer des Flashcards</CardTitle>
         </div>
-        <CardDescription>Paste your notes below and let AI create study questions for you.</CardDescription>
+        <CardDescription>Collez vos notes ci-dessous et laissez l'IA créer des questions d'étude pour vous.</CardDescription>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">
           <Textarea
-            placeholder="e.g., The mitochondria is the powerhouse of the cell..."
+            placeholder="Ex: La mitochondrie est la centrale énergétique de la cellule..."
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
             rows={10}
@@ -62,12 +62,12 @@ export default function NotesInput({ isLoading, setIsLoading, onFlashcardsGenera
             {isLoading ? (
               <>
                 <Sparkles className="mr-2 h-4 w-4 animate-spin" />
-                Generating...
+                Génération...
               </>
             ) : (
               <>
                 <Sparkles className="mr-2 h-4 w-4" />
-                Generate
+                Générer
               </>
             )}
           </Button>

@@ -20,8 +20,8 @@ export default function QuestGenieApp() {
   const handleAddFlashcard = () => {
     const newCard: Flashcard = {
       id: crypto.randomUUID(),
-      question: 'New Question',
-      answer: 'New Answer',
+      question: 'Nouvelle Question',
+      answer: 'Nouvelle Réponse',
     };
     setFlashcards([newCard, ...flashcards]);
   };
@@ -37,8 +37,8 @@ export default function QuestGenieApp() {
   const handleGeneratedFlashcards = (newFlashcards: Flashcard[]) => {
     setFlashcards([...newFlashcards, ...flashcards]);
     toast({
-      title: 'Success!',
-      description: `${newFlashcards.length} new flashcards have been generated.`,
+      title: 'Succès !',
+      description: `${newFlashcards.length} nouvelles fiches ont été générées.`,
     });
   };
 
@@ -57,7 +57,7 @@ export default function QuestGenieApp() {
           <div className="lg:order-2 mt-8 lg:mt-0">
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-2xl font-bold font-headline text-primary">
-                {mode === 'edit' ? 'My Deck' : 'Review Mode'}
+                {mode === 'edit' ? 'Mon Paquet' : 'Mode Révision'}
               </h2>
               {flashcards.length > 0 && (
                 <Button
@@ -65,7 +65,7 @@ export default function QuestGenieApp() {
                   onClick={() => setMode(mode === 'edit' ? 'review' : 'edit')}
                 >
                   {mode === 'edit' ? <BookOpen className="mr-2" /> : <Pencil className="mr-2" />}
-                  {mode === 'edit' ? 'Start Review' : 'Back to Edit'}
+                  {mode === 'edit' ? 'Commencer la révision' : 'Retour à l\'édition'}
                 </Button>
               )}
             </div>

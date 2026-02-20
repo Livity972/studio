@@ -5,7 +5,7 @@ import type { Flashcard, GeneratedFlashcard } from '@/app/types';
 
 export async function generateFlashcardsAction(notes: string): Promise<{ data: Flashcard[] | null; error: string | null }> {
   if (!notes || notes.trim().length < 20) {
-    return { data: null, error: 'Please provide more detailed notes (at least 20 characters) to generate flashcards.' };
+    return { data: null, error: 'Veuillez fournir des notes plus détaillées (au moins 20 caractères) pour générer des fiches.' };
   }
 
   try {
@@ -13,7 +13,7 @@ export async function generateFlashcardsAction(notes: string): Promise<{ data: F
     const generated: GeneratedFlashcard[] = await generateFlashcardsFlow(input);
 
     if (!generated || generated.length === 0) {
-        return { data: null, error: 'The AI could not generate flashcards from the provided notes. Please try rephrasing or adding more details.' };
+        return { data: null, error: 'L\'IA n\'a pas pu générer de fiches à partir des notes fournies. Veuillez essayer de reformuler ou d\'ajouter plus de détails.' };
     }
     
     const flashcardsWithIds: Flashcard[] = generated.map((card) => ({
@@ -24,6 +24,6 @@ export async function generateFlashcardsAction(notes: string): Promise<{ data: F
     return { data: flashcardsWithIds, error: null };
   } catch (e) {
     console.error('Error generating flashcards:', e);
-    return { data: null, error: 'An unexpected error occurred while generating flashcards. Please try again later.' };
+    return { data: null, error: 'Une erreur inattendue s\'est produite lors de la génération des fiches. Veuillez réessayer plus tard.' };
   }
 }

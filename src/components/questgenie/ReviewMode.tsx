@@ -45,7 +45,7 @@ export default function ReviewMode({ flashcards }: ReviewModeProps) {
   };
   
   if (shuffledCards.length === 0) {
-    return <div className="text-center text-muted-foreground p-8">No cards to review.</div>;
+    return <div className="text-center text-muted-foreground p-8">Aucune fiche à réviser.</div>;
   }
   
   const currentCard = shuffledCards[currentIndex];
@@ -54,10 +54,10 @@ export default function ReviewMode({ flashcards }: ReviewModeProps) {
     <div className="flex flex-col h-full">
       <div className="mb-4">
         <div className="flex justify-between items-center text-sm text-muted-foreground mb-2">
-            <span>Card {currentIndex + 1} of {shuffledCards.length}</span>
+            <span>Fiche {currentIndex + 1} sur {shuffledCards.length}</span>
             <Button variant="ghost" size="sm" onClick={shuffleCards}>
                 <Shuffle className="mr-2 h-4 w-4" />
-                Shuffle
+                Mélanger
             </Button>
         </div>
         <Progress value={((currentIndex + 1) / shuffledCards.length) * 100} />
@@ -76,7 +76,7 @@ export default function ReviewMode({ flashcards }: ReviewModeProps) {
           <ChevronLeft className="h-4 w-4" />
         </Button>
         <Button onClick={() => setIsFlipped(!isFlipped)} className="px-8 bg-accent hover:bg-accent/90">
-            Flip Card
+            Retourner la fiche
         </Button>
         <Button variant="outline" size="icon" onClick={handleNext}>
           <ChevronRight className="h-4 w-4" />
